@@ -15,11 +15,11 @@ class RunSegmentation:
         publishTopic = rosparam.get_param("pub_topic")
         imageRes= rosparam.get_param("resolution")
         self.resolution = imageRes.split("x")
+        self.resolution = [ int(self.resolution[0]), int(self.resolution[1])]
         modelType = rosparam.get_param("model")
         scale = rosparam.get_param("scale")
         self.bridge = CvBridge()
-        self.image = np.zeros(self.resolution[0], self.resolution[1],3)
-        self.model = setupSegNet(modelType,scale)
+        self.model = setupSegNet(modelType,scale,self.resolution)
         self.listener(imageTopic,publishTopic)
 
 

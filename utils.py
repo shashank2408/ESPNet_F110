@@ -3,6 +3,10 @@ import rospy
 from data_loader.segmentation.cityscapes import CITYSCAPE_CLASS_LIST
 from torchvision.transforms import functional as F
 from transforms.classification.data_transforms import MEAN, STD
+import os 
+from model.segmentation.espnetv2 import ESPNetv2Segmentation
+from model.segmentation.dicenet import DiCENetSegmentation	
+from argparse import Namespace
 
 def relabel(img):
     '''
@@ -39,23 +43,22 @@ def data_transform(img, im_size):
     img = F.normalize(img, MEAN, STD)  # normalize the tensor
     return img
 
-def getPreTrainedModel(model,scale, im_size):
-    model_key = '{}_{}'.format(args.model, args.s)
-    dataset_key = '{}_{}x{}'.format(args.dataset, args.im_size[0], args.im_size[1])
+def getPreTrainedModel(model,scale, im_size,dataset="city"):
+    model_key = '{}_{}'.format(model, scale)
+    dataset_key = '{}_{}x{}'.format(dataset, im_size[0], im_size[1])
     assert model_key in model_weight_map.keys(), '{} does not exist'.format(model_key)
     assert dataset_key in model_weight_map[model_key].keys(), '{} does not exist'.format(dataset_key)
     weights_test = model_weight_map[model_key][dataset_key]['weights']
 
 
-    if not os.path.isfile(args.weights_test):
+    if not os.path.isfile(weights_test):
         print("Weights file not found. Check Params")
         exit(-1)
 
     return weights_test
 
-def setupSegNet(modelType,scale):
+def setupSegNet(modelType,scale,im_size):
     segClasses = len(CITYSCAPE_CLASS_LIST)
-
     modelWeightsFile = getPreTrainedModel(modelType,scale,im_size)
     
     if modelType == 'espnetv2':

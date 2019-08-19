@@ -1,0 +1,5 @@
+image_topic: "/zed/zed_node/rgb_raw/image_rect_color"
+pub_topic: "/zed/zed_node/segmented_image"
+resolution: "512x256"
+model: "espnetv2"
+scale: 2.0

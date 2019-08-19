@@ -19,7 +19,7 @@ class DiCENetSegmentation(nn.Module):
     '''
 
     def __init__(self, args, classes=21, dataset='pascal'):
-        super().__init__()
+        super(DiCENetSegmentation,self).__init__()
 
         # =============================================================
         #                       BASE NETWORK

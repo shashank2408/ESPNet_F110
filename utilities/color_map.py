@@ -7,7 +7,7 @@ import numpy as np
 
 class VOCColormap(object):
     def __init__(self, n=256, num_classes=21, normalized=False):
-        super().__init__()
+        super(VOCColormap,self).__init__()
         self.n = n
         self.normalized = normalized
         self.num_classes = num_classes

@@ -14,7 +14,7 @@ class EffDWSepConv(nn.Module):
     This class implements the volume-wise seperable convolutions
     '''
     def __init__(self, channel_in, channel_out, kernel_size=3):
-        super().__init__()
+        super(EffDWSepConv,self).__init__()
         self.conv_channel = CBR(channel_in, channel_in, kSize=kernel_size, stride=1, groups=channel_in)
 
         # project from channel_in to Channel_out
@@ -64,7 +64,7 @@ class StridedEffDWise(nn.Module):
         :param res_conn: Residual connection in the volume-wise separabel convolutions
         :param proj: Want to project the feature maps from channel_in to channel_out or not
         '''
-        super().__init__()
+        super(StridedEffDWise,self).__init__()
 
         self.pool_layer = CBR(channel_in, channel_in, 3, stride=2, groups=channel_in)
         self.dw_layer =  EffDWSepConv(channel_in, channel_in, kernel_size=kernel_size)

@@ -67,7 +67,7 @@ class StridedShuffleBlock(nn.Module):
 
 class CNNModel(nn.Module):
     def __init__(self, args):
-        super().__init__()
+        super(CNNModel,self).__init__()
 
         # ====================
         # Network configuraiton

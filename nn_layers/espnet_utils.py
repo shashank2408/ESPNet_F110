@@ -18,7 +18,7 @@ class CBR(nn.Module):
         :param kSize: kernel size
         :param stride: stride rate for down-sampling. Default is 1
         '''
-        super().__init__()
+        super(CBR,self).__init__()
         padding = int((kSize - 1) / 2)
         self.conv = nn.Conv2d(nIn, nOut, kSize, stride=stride, padding=padding, bias=False, groups=groups)
         self.bn = nn.BatchNorm2d(nOut)
@@ -45,7 +45,7 @@ class BR(nn.Module):
         '''
         :param nOut: output feature maps
         '''
-        super().__init__()
+        super(BR,self).__init__()
         self.bn = nn.BatchNorm2d(nOut)
         self.act = nn.PReLU(nOut)
 
@@ -71,7 +71,7 @@ class CB(nn.Module):
         :param kSize: kernel size
         :param stride: optinal stide for down-sampling
         '''
-        super().__init__()
+        super(CB,self).__init__()
         padding = int((kSize - 1) / 2)
         self.conv = nn.Conv2d(nIn, nOut, kSize, stride=stride, padding=padding, bias=False,
                               groups=groups)
@@ -101,7 +101,7 @@ class C(nn.Module):
         :param kSize: kernel size
         :param stride: optional stride rate for down-sampling
         '''
-        super().__init__()
+        super(C,self).__init__()
         padding = int((kSize - 1) / 2)
         self.conv = nn.Conv2d(nIn, nOut, kSize, stride=stride, padding=padding, bias=False,
                               groups=groups)
@@ -128,7 +128,7 @@ class CDilated(nn.Module):
         :param stride: optional stride rate for down-sampling
         :param d: optional dilation rate
         '''
-        super().__init__()
+        super(CDilated,self).__init__()
         padding = int((kSize - 1) / 2) * d
         self.conv = nn.Conv2d(nIn, nOut,kSize, stride=stride, padding=padding, bias=False,
                               dilation=d, groups=groups)
@@ -154,7 +154,7 @@ class CDilatedB(nn.Module):
         :param stride: optional stride rate for down-sampling
         :param d: optional dilation rate
         '''
-        super().__init__()
+        super(CDilatedB,self).__init__()
         padding = int((kSize - 1) / 2) * d
         self.conv = nn.Conv2d(nIn, nOut,kSize, stride=stride, padding=padding, bias=False,
                               dilation=d, groups=groups)

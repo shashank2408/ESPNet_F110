@@ -22,7 +22,7 @@ class EESPNet(nn.Module):
         :param classes: number of classes in the dataset. Default is 1000 for the ImageNet dataset
         :param s: factor that scales the number of output feature maps
         '''
-        super().__init__()
+        super(EESPNet,self).__init__()
 
         # ====================
         # Network configuraiton

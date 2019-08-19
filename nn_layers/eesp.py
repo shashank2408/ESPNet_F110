@@ -27,7 +27,7 @@ class EESP(nn.Module):
         :param r_lim: A maximum value of receptive field allowed for EESP block
         :param down_method: Downsample or not (equivalent to say stride is 2 or not)
         '''
-        super().__init__()
+        super(EESP,self).__init__()
         self.stride = stride
         n = int(nOut / k)
         n1 = nOut - (k - 1) * n
@@ -109,7 +109,7 @@ class DownSampler(nn.Module):
             :param r_lim: A maximum value of receptive field allowed for EESP block
             :param reinf: Use long range shortcut connection with the input or not.
         '''
-        super().__init__()
+        super(DownSampler,self).__init__()
         nout_new = nout - nin
         self.eesp = EESP(nin, nout_new, stride=2, k=k, r_lim=r_lim, down_method='avg')
         self.avg = nn.AvgPool2d(kernel_size=3, padding=1, stride=2)

@@ -19,7 +19,7 @@ class ESPNetv2Segmentation(nn.Module):
     '''
 
     def __init__(self, args, classes=21, dataset='pascal'):
-        super().__init__()
+        super(ESPNetv2Segmentation,self).__init__()
 
         # =============================================================
         #                       BASE NETWORK

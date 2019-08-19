@@ -38,7 +38,7 @@ class CBR(nn.Module):
         :param groups: # of groups for group-wise convolution
         :param act_name: Name of the activation function
         '''
-        super().__init__()
+        super(CBR,self).__init__()
         padding = int((kSize - 1) / 2)*dilation
         self.cbr = nn.Sequential(
             nn.Conv2d(nIn, nOut, kSize, stride=stride, padding=padding, bias=False, groups=groups, dilation=dilation),
@@ -67,7 +67,7 @@ class CB(nn.Module):
         :param stride: stride rate for down-sampling. Default is 1
         :param groups: # of groups for group-wise convolution
         '''
-        super().__init__()
+        super(CB,self).__init__()
         padding = int((kSize - 1) / 2)*dilation
         self.cb = nn.Sequential(
             nn.Conv2d(nIn, nOut, kSize, stride=stride, padding=padding, bias=False, groups=groups, dilation=1),
@@ -91,7 +91,7 @@ class BR(nn.Module):
         :param nIn: number of input channels
         :param act_name: Name of the activation function
         '''
-        super().__init__()
+        super(BR,self).__init__()
         self.br = nn.Sequential(
             nn.BatchNorm2d(nOut),
             activation_fn(nOut, name=act_name)
@@ -113,7 +113,7 @@ class Shuffle(nn.Module):
         '''
         :param groups: # of groups for shuffling
         '''
-        super().__init__()
+        super(Shuffle,self).__init__()
         self.groups = groups
 
     def forward(self, x):

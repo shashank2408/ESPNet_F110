@@ -14,7 +14,7 @@ class Shuffle(nn.Module):
         '''
         :param groups: # of groups for shuffling
         '''
-        super().__init__()
+        super(Shuffle,self).__init__()
         self.groups = groups
 
     def forward(self, x):
@@ -51,7 +51,7 @@ class DWSepConv(nn.Module):
 
 class StridedDWise(nn.Module):
     def __init__(self, channel_in, kernel_size=3, dilation=1):
-        super().__init__()
+        super(StridedDWise,self).__init__()
         self.pool_layer = CBR(channel_in, channel_in, 3, stride=2, groups=channel_in)
         self.dwise_layer = DWSepConv(channel_in, channel_in, kernel_size=kernel_size, dilation=dilation)
         self.channel_in = channel_in

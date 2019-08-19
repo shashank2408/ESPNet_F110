@@ -23,7 +23,7 @@ class DICE(nn.Module):
         :param dilation: It's a list with 3 elements, each element corresponding to a dilation rate for each dimension.
         :param shuffle: Shuffle the feature maps in the volume-wise separable convolutions
         '''
-        super().__init__()
+        super(DICE,self).__init__()
         assert len(dilation) == 3
         padding_1 = int((kernel_size - 1) / 2) *dilation[0]
         padding_2 = int((kernel_size - 1) / 2) *dilation[1]
@@ -133,7 +133,7 @@ class StridedDICE(nn.Module):
         :param dilation: It's a list with 3 elements, each element corresponding to a dilation rate for each dimension.
         :param shuffle: Shuffle the feature maps in the volume-wise separable convolutions
         '''
-        super().__init__()
+        super(StridedDICE,self).__init__()
         assert len(dilation) == 3
 
         self.left_layer = nn.Sequential(CBR(channel_in, channel_in, 3, stride=2, groups=channel_in),

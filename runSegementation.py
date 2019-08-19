@@ -7,7 +7,7 @@ from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
 from utils import *
 import cv2
-
+from argparse import Namespace
 class RunSegmentation:
     
     def __init__(self):
@@ -19,7 +19,9 @@ class RunSegmentation:
         modelType = rosparam.get_param("model")
         scale = rosparam.get_param("scale")
         self.bridge = CvBridge()
-        self.model = setupSegNet(modelType,scale,self.resolution)
+        args = Namespace(im_size = self.resolution, model = modelType, s = scale)
+
+        self.model = setupSegNet(args)
         self.listener(imageTopic,publishTopic)
 
 
@@ -33,10 +35,9 @@ class RunSegmentation:
 
 
     def evaluate(self,img):
-        img_size = tuple(self.resolution)
         w, h = cv2.GetSize(img)
         device = 'cuda' if num_gpus >= 1 else 'cpu'
-        img = data_transfom(img,img_size)
+        img = data_transfom(img,tuple(self.resolution))
         img = img.unsqueeze(0)  # add a batch dimension
         img = img.to(device)
         img_out = model(img)

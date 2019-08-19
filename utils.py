@@ -44,6 +44,8 @@ def data_transform(img, im_size):
     return img
 
 def getPreTrainedModel(args,dataset="city"):
+    # Function gets the pretrained model file from the model directory 
+
     model_key = '{}_{}'.format(args.model, args.s)
     dataset_key = '{}_{}x{}'.format(dataset, args.im_size[0], args.im_size[1])
     assert model_key in model_weight_map.keys(), '{} does not exist'.format(model_key)
@@ -58,6 +60,7 @@ def getPreTrainedModel(args,dataset="city"):
     return weights_test
 
 def setupSegNet(args):
+    # Function to call the appropriate model class
 
     args.num_classes = len(CITYSCAPE_CLASS_LIST)
     modelWeightsFile = getPreTrainedModel(args)
@@ -70,6 +73,8 @@ def setupSegNet(args):
 
 
 def espNetModel(args, weights,dataset="city"):
+    # Function to initialize the espnet class
+
     model = ESPNetv2Segmentation(args, classes=args.num_classes, dataset=dataset)
     num_gpus = torch.cuda.device_count()
     device = 'cuda' if num_gpus >= 1 else 'cpu'
@@ -87,6 +92,8 @@ def espNetModel(args, weights,dataset="city"):
     return model
 
 def diceNet(args, weights):
+    # Function to intialize the dicent segmenetation network
+
     model = DiCENetSegmentation(args, classes=args.num_classes)
     num_gpus = torch.cuda.device_count()
     device = 'cuda' if num_gpus >= 1 else 'cpu'

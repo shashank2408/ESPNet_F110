@@ -1,0 +1,3 @@
+segmented_topic: "/zed/zed_node/segmented_image"
+PCL_topic: "/zed/zed_node/cloud"
+layers_File: "layers.json"

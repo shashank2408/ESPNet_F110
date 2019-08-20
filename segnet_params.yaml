@@ -1,4 +1,4 @@
-image_topic: "/zed/zed_node/rgb_raw/image_raw_color"
+image_topic: "/usb_cam/image_raw"
 pub_topic: "/zed/zed_node/segmented_image"
 resolution: "512x256"
 model: "espnetv2"

@@ -70,7 +70,9 @@ class ESPNetv2Segmentation(nn.Module):
         self.init_params()
 
     def upsample(self, x):
-        return F.interpolate(x, scale_factor=2, mode='bilinear', align_corners=True)
+        #return F.interpolate(x, scale_factor=2, mode='bilinear', align_corners=True)
+        m = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True )
+        return m(x)
 
     def init_params(self):
         '''
@@ -160,7 +162,10 @@ class ESPNetv2Segmentation(nn.Module):
         bu_out = self.bu_br_l4(bu_out)
         bu_out  = self.bu_dec_l4(bu_out)
 
-        return F.interpolate(bu_out, size=x_size, mode='bilinear', align_corners=True)
+
+	m = nn.Upsample(x_size, mode='bilinear', align_corners=True )
+	# return F.interpolate(bu_out, size=x_size, mode='bilinear', align_corners=True)
+	return m(bu_out)
 
 
 def espnetv2_seg(args):

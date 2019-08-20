@@ -5,6 +5,7 @@ __maintainer__ = "Sachin Mehta"
 
 from torch import nn
 import math
+import fractions
 from nn_layers.cnn_utils import CBR
 
 class EfficientPWConv(nn.Module):
@@ -16,7 +17,7 @@ class EfficientPWConv(nn.Module):
                         nn.Sigmoid()
                     )
 
-        self.groups = math.gcd(nin, nout)
+        self.groups = fractions.gcd(nin, nout)
         self.expansion_layer = CBR(nin, nout, kSize=3, stride=1, groups=self.groups)
 
         self.out_size = nout

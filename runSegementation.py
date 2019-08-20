@@ -23,6 +23,7 @@ class RunSegmentation:
 
         self.model = setupSegNet(args)
         self.listener(imageTopic,publishTopic)
+        self.count = 0
 
 
     def ImageCallback(self,data):
@@ -31,29 +32,34 @@ class RunSegmentation:
         except CvBridgeError as e:
             print(e)
         img_out = self.evaluate(img)
-        self.pub.publish(img_out)
+        msg = self.bridge.cv2_to_imgmsg(img_out)
+        self.pub.publish(msg)
 
 
     def evaluate(self,img):
-        w, h = cv2.GetSize(img)
+        h, w, ch = img.shape
+    	num_gpus = torch.cuda.device_count()
         device = 'cuda' if num_gpus >= 1 else 'cpu'
-        img = data_transfom(img,tuple(self.resolution))
+        img = data_transform(img,tuple(self.resolution))
         img = img.unsqueeze(0)  # add a batch dimension
         img = img.to(device)
-        img_out = model(img)
+        img_out = self.model(img)
         img_out = img_out.max(0)[1].byte()  # get the label map
         img_out = img_out.to(device='cpu').numpy()
         img_out = relabel(img_out)
-        
+       	print(img_out.shape)
         img_out = cv2.resize(img_out, (w, h), interpolation=cv2.INTER_NEAREST)
+        print(img_out.shape)
+        #cv2.imwrite("image_%06i.png"%self.count, img_out)
+        self.count+=1	
 
         return img_out
 
 
     def listener(self, imageTopic,publishTopic):
         rospy.init_node("ESPNet_ROS")
-        sub = rospy.Subscriber(imageTopic,Image,ImageCallback)
-        self.pub = rospy.Publisher(publishTopic,Image, queue_size = 10)
+        sub = rospy.Subscriber(imageTopic,Image,self.ImageCallback)
+        self.pub = rospy.Publisher(publishTopic,Image, queue_size = 1)
 
 
 if __name__ == "__main__":

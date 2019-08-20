@@ -45,9 +45,15 @@ class EfficientPyrPool(nn.Module):
             if self.scales[i] < 1.0:
                 h = F.adaptive_avg_pool2d(x, output_size=(h_s, w_s))
                 h = stage(h)
-                h = F.interpolate(h, (height, width), mode='bilinear', align_corners=True)
+                #h = F.interpolate(h, (height, width), mode='bilinear', align_corners=True)
+               # m = nn.Upsample((height,width), mode='linear',align_corners=True )
+                m = nn.Upsample((height,width), mode='bilinear', align_corners=True )
+                h = m(h)	
             elif self.scales[i] > 1.0:
-                h = F.interpolate(x, (h_s, w_s), mode='bilinear', align_corners=True)
+                #h = F.interpolate(x, (h_s, w_s), mode='bilinear', align_corners=True)
+                #m = nn.Upsample((height,width), mode='linear',align_corners=True )
+                m = nn.Upsample((height,width), mode='bilinear', align_corners=True )
+                h = m(x)
                 h = stage(h)
                 h = F.adaptive_avg_pool2d(h, output_size=(height, width))
             else:

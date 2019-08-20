@@ -15,7 +15,7 @@ class RunSegmentation:
         publishTopic = rosparam.get_param("pub_topic")
         imageRes= rosparam.get_param("resolution")
         self.resolution = imageRes.split("x")
-        self.resolution = [ int(self.resolution[0]), int(self.resolution[1])]
+        self.resolution = [int(self.resolution[0]), int(self.resolution[1])]
         modelType = rosparam.get_param("model")
         scale = rosparam.get_param("scale")
         self.bridge = CvBridge()
@@ -41,17 +41,19 @@ class RunSegmentation:
     	num_gpus = torch.cuda.device_count()
         device = 'cuda' if num_gpus >= 1 else 'cpu'
         img = data_transform(img,tuple(self.resolution))
+        
         img = img.unsqueeze(0)  # add a batch dimension
         img = img.to(device)
         img_out = self.model(img)
+        print(img_out.shape)
+        img_out = img_out.squeeze(0)  # add a batch dimension
         img_out = img_out.max(0)[1].byte()  # get the label map
         img_out = img_out.to(device='cpu').numpy()
+
         img_out = relabel(img_out)
-       	print(img_out.shape)
-        img_out = cv2.resize(img_out, (h, w), interpolation=cv2.INTER_NEAREST)
-        print(img_out.shape)
-        #cv2.imwrite("image_%06i.png"%self.count, img_out)
-        self.count+=1	
+        
+ 	im_size = tuple((h,w))
+        img_out = cv2.resize(img_out, im_size, interpolation=cv2.INTER_NEAREST)	
 
         return img_out
 

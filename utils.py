@@ -39,8 +39,9 @@ def relabel(img):
     return img
 
 
-def data_transform(img, im_size):
-    img = cv2.resize(img, im_size, cv2.INTER_NEAREST)
+def data_transform(im, im_size):
+
+    img = cv2.resize(im, im_size, interpolation=cv2.INTER_NEAREST)
     img = F.to_tensor(img)  # convert to tensor (values between 0 and 1)
     img = F.normalize(img, MEAN, STD)  # normalize the tensor
     return img

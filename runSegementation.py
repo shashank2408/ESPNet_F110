@@ -37,7 +37,7 @@ class RunSegmentation:
 
 
     def evaluate(self,img):
-        h, w, ch = img.shape
+        w, h, ch = img.shape
     	num_gpus = torch.cuda.device_count()
         device = 'cuda' if num_gpus >= 1 else 'cpu'
         img = data_transform(img,tuple(self.resolution))
@@ -48,7 +48,7 @@ class RunSegmentation:
         img_out = img_out.to(device='cpu').numpy()
         img_out = relabel(img_out)
        	print(img_out.shape)
-        img_out = cv2.resize(img_out, (w, h), interpolation=cv2.INTER_NEAREST)
+        img_out = cv2.resize(img_out, (h, w), interpolation=cv2.INTER_NEAREST)
         print(img_out.shape)
         #cv2.imwrite("image_%06i.png"%self.count, img_out)
         self.count+=1	

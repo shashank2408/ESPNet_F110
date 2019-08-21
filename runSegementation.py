@@ -45,7 +45,6 @@ class RunSegmentation:
         img = img.unsqueeze(0)  # add a batch dimension
         img = img.to(device)
         img_out = self.model(img)
-        print(img_out.shape)
         img_out = img_out.squeeze(0)  # add a batch dimension
         img_out = img_out.max(0)[1].byte()  # get the label map
         img_out = img_out.to(device='cpu').numpy()

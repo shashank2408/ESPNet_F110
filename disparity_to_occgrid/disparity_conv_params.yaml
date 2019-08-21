@@ -1,0 +1,5 @@
+segmented_topic: "/zed/zed_node/segmented_image"
+disparity_topic: "/zed/zed_node/disparity"
+layers_File: "layers.json"
+left_cam_info: "left_cam_info"
+right_cam_info: "right_cam_info"

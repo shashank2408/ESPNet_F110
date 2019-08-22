@@ -6,22 +6,24 @@ def getIndicesOfObjects(img, objects):
     """ Iterates through the objects list and gets list of all indices 
         where the pixel value equals the object label"""
 
-    x = []
-    y = []
+    x = np.array([])
+    y = np.array([])
 
     for objNum in objects:
         indices = np.array(np.where(img == objNum))
-        x = np.hstack((x,indices[0]))
-        y = np.hstack((y,indices[1]))
-    x= x[:,np.newaxis]
-    y= y[:,np.newaxis]
+        if indices.any():
+		x = np.hstack((x,indices[0]))
+		y = np.hstack((y,indices[1]))
+    if x.any() and y.any():
+	    x= x[:,np.newaxis]
+	    y= y[:,np.newaxis]
     cords = np.hstack((x,y))
     return cords
 
 
 def getCordsinPCL(pcl_points, cords, h, w):
-    position = cords[0] + cords[1]*w
-    return pcl_points(position)
+    position = int(cords[0]*w + cords[1])
+    return pcl_points[position]
 
 
 def imgToGrid(point):
@@ -30,9 +32,12 @@ def imgToGrid(point):
     x=round(x)
     y=round(y)
     y = y+500;
-    y = y>1000?1000:y;
-    y = y<0?0:y;
-    x = x>1000?1000:x;
+    #y = y>1000?1000:y;
+    y = 1000 if y>1000 else y
+    #y = y<0?0:y;
+    y = 0 if y <0 else y
+    x = 1000 if x>1000 else x
+    #x = x>1000?1000:x;
     return tuple((x,y))
 
 

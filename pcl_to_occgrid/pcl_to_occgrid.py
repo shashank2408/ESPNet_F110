@@ -6,11 +6,14 @@
 import rospy 
 import numba
 import rosparam
+import json
 
 from nav_msgs.msg import OccupancyGrid
 from sensor_msgs.msg import *
 from sensor_msgs.msg import *
 from cv_bridge import CvBridge, CvBridgeError
+from pcl_utils import *
+import sensor_msgs.point_cloud2 as pc2
 
 class PclToOccGrid:
 
@@ -19,8 +22,9 @@ class PclToOccGrid:
         pclSub = rosparam.get_param("PCL_topic")
         layersFile = rosparam.get_param("layers_File")
         file = open(layersFile)
-        self.layers = json.load(file)
-        self.objects = self.layers[0]["objects"]
+        #self.layers = json.load(file)
+        #self.objects = self.layers[0]["objects"]
+        self.objects = [7,0]
         self.bridge = CvBridge()
         leftCamInfo = rosparam.get_param("left_cam_info")
         rightCamInfo = rosparam.get_param("right_cam_info")
@@ -32,19 +36,22 @@ class PclToOccGrid:
 
     def ImageCallback(self,data):
         img = self.bridge.imgmsg_to_cv2(data)
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        self.cords = getIndicesOfObjects(gray,self.objects)
+        self.cords = getIndicesOfObjects(img,self.objects)
 
 
     def PCLCallback(self, data):
-        points = point_cloud2.read_points(pcl)
+        points = list(pc2.read_points(data,field_names = ("x", "y", "z")))
         if self.cords is not None:
-            pointsMap = list(map(lambda cord : getCordsinPCL(points, data.width), self.cords))
-            pointsGrid = list(map(imgToGrid, pointsMap))
+            pointsMap = list(map(lambda cord : getCordsinPCL(points, cord, data.height,data.width), self.cords))
+            gridPoints = list(map(imgToGrid, pointsMap))
+            print(gridPoints)
 
     def listener(self, segSub, pclSub):
         rospy.init_node("PCL_OccGrid")
-        sub = rospy.Subscriber(segSub, Image,ImageCallback)
+        sub = rospy.Subscriber(segSub, Image,self.ImageCallback)
+        cloud_sub = rospy.Subscriber(pclSub, PointCloud2, self.PCLCallback)
+	
 
-
-
+if __name__ == "__main__":
+	pco = PclToOccGrid()
+	rospy.spin()

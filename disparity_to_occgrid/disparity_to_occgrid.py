@@ -9,9 +9,9 @@ import rosparam
 
 from nav_msgs.msg import OccupancyGrid
 from sensor_msgs.msg import *
+from disparity_utils import *
+from stereo_msgs.msg import DisparityImage
 from cv_bridge import CvBridge, CvBridgeError
-from doc_utils import *
-from image_geometry.cameramodels import StereoCameraModel
 
 class DisparityToOccGrid:
 
@@ -19,31 +19,68 @@ class DisparityToOccGrid:
         segSub = rosparam.get_param("segmented_topic")
         dispSub = rosparam.get_param("disparity_topic")
         layersFile = rosparam.get_param("layers_File")
-        file = open(layersFile)
-        self.layers = json.load(file)
-        self.objects = self.layers[0]["objects"]
-        self.bridge = CvBridge()
+        #file = open(layersFile)
+        #self.layers = json.load(file)
+        #self.objects = self.layers[0]["objects"]
+        self.objects=[12,13,20]
         leftCamInfo = rosparam.get_param("left_cam_info")
         rightCamInfo = rosparam.get_param("right_cam_info")
+        self.disparityImage = None
+        self.bridge = CvBridge()
+        self.occGrid = OccupancyGrid()
+    	self.occGrid.info.resolution = 0.1
+    	self.occGrid.info.width= 1001
+    	self.occGrid.info.height= 1001
+    	self.disparityImage = DisparityImage()
         self.listener(segSub,dispSub,leftCamInfo,rightCamInfo)
 
+
+
     def ImageCallback(self,data):
-        img = self.bridge.imgmsg_to_cv2(data)
-        cords = getIndicesOfObjects(img,self.objects)
-        points = getPointsTo3D(cords,self.disparityImage)
-        print(points)
+    	print("Image cb")
+	img = self.bridge.imgmsg_to_cv2(data)
+	cords = getIndicesOfObjects(img,self.objects)
+	points = getPointsTo3D(cords,self.disparityImage,self.leftCamMsg,self.rightCamMsg)
+	#print(points)
+	self.publishGrid(points)
+	print(len(points))
 
     def dispCallback(self,data):
-        self.disparityImage = self.bridge.imgmsg_to_cv2(data.image)
+        self.disparityImage = data
 
+    def publishGrid(self,points):
+    	height = 1001
+    	width = 1001
+    	grid = np.ones((height,width),dtype=np.int8)*50
+
+    	for p in points:
+    		#index = np.unravel_index(grid,int(p[0]),int(p[1]))
+    		grid[int(p[0]),int(p[1])] = 0
+    	
+    	grid = grid.ravel()
+    	
+    	self.occGrid.data = grid
+    	self.occGrid.header.frame_id = "map"
+    	self.pub.publish(self.occGrid)
+	print("Published grid")
+	
+	
+		
     def listener(self, segSub, dispSub, leftCamInfo, rightCamInfo):
         rospy.init_node("PCL_OccGrid")
+        disparitySub = rospy.Subscriber(dispSub,DisparityImage,self.dispCallback)     
+
+        self.leftCamMsg = rospy.wait_for_message(leftCamInfo, CameraInfo)
+        self.rightCamMsg = rospy.wait_for_message(rightCamInfo, CameraInfo)
         sub = rospy.Subscriber(segSub, Image,self.ImageCallback)
-        disparitySub = rospy.Subscriber(dispSub,Image,self.dispCallback)
-        self.leftCamInfo = rospy.wait_for_message(leftCamInfo, CameraInfo)
-        self.rightCamInfo = rospy.wait_for_message(rightCamInfo, CameraInfo)
+        self.pub = rospy.Publisher("occGrid", OccupancyGrid, queue_size=1)
+	print("All topics are subscribed")
 
 
+
+if __name__ == "__main__":
+	di = DisparityToOccGrid()
+	rospy.spin()
 
 
 

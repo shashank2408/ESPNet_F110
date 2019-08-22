@@ -1,22 +1,33 @@
-import json 
-import cv2
-import numpy as np
-# f = open("layers.json")
-# o = json.load(f)
-
-# for item in o["Layers"]:
-#     print (item["layer_name"])
-#     print (item["objects"])
+from disparity_utils import *
+from stereo_msgs.msg import DisparityImage
+import rospy 
+import numba
+import rosparam
+from image_geometry.cameramodels import StereoCameraModel
+from sensor_msgs.msg import *
 
 
-file = "/home/mlab-train/Desktop/deeprl/LaneDetection/EdgeNets/results_city_test/results/image_right000001.png"
 
-img = cv2.imread(file,cv2.IMREAD_GRAYSCALE)
-# np.savetxt("foo.csv", img, delimiter=",")
-p = np.array(np.where(img == 21))
-# p.append(list(np.where(img==11)))
-# np.savetxt("foo_ind.csv", p, delimiter=",")
-print(p)
-print(np.hstack((p[0],p[1])))
+segSub = rosparam.get_param("segmented_topic")
+dispSub = rosparam.get_param("disparity_topic")
+layersFile = rosparam.get_param("layers_File")
 
-print(img.shape)
+
+leftCamInfo = rosparam.get_param("left_cam_info")
+rightCamInfo = rosparam.get_param("right_cam_info")
+
+
+leftCamMsg = rospy.wait_for_message(leftCamInfo, CameraInfo)
+rightCamMsg = rospy.wait_for_message(rightCamInfo, CameraInfo)
+
+
+stereoObj = StereoCameraModel()
+print("Cloading left and right")
+stereoObj.fromCameraInfo(leftCamMsg,rightCamMsg)
+
+coord = (141.0, 326.0)
+disparity= -35.58024
+print("Computing point")
+point =  stereoObj.projectPixelTo3d((coord[0],coord[1]),np.float(disparity))
+
+print(point)

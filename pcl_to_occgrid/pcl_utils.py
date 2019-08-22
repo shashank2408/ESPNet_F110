@@ -20,7 +20,7 @@ def getIndicesOfObjects(img, objects):
 
 
 def getCordsinPCL(pcl_points, cords, h, w):
-    position = cords[0] + cords[0]*w
+    position = cords[0] + cords[1]*w
     return pcl_points(position)
 
 

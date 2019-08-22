@@ -22,7 +22,12 @@ class PclToOccGrid:
         self.layers = json.load(file)
         self.objects = self.layers[0]["objects"]
         self.bridge = CvBridge()
+        leftCamInfo = rosparam.get_param("left_cam_info")
+        rightCamInfo = rosparam.get_param("right_cam_info")
+
         self.listener(segSub,pclSub)
+
+
         self.cords = None
 
     def ImageCallback(self,data):

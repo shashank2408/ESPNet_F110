@@ -22,7 +22,7 @@ class DisparityToOccGrid:
         #file = open(layersFile)
         #self.layers = json.load(file)
         #self.objects = self.layers[0]["objects"]
-        self.objects=[12,13,20]
+        self.objects=[127]
         leftCamInfo = rosparam.get_param("left_cam_info")
         rightCamInfo = rosparam.get_param("right_cam_info")
         self.disparityImage = None

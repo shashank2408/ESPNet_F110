@@ -34,14 +34,14 @@ def relabel(img):
     img[img == 3] = 12
     img[img == 2] = 11
     img[img == 1] = 8
-    img[img == 0] = 255
+    img[img == 0] = 127
     img[img == 255] = 0
     return img
 
 
-def data_transform(im, im_size):
-
-    img = cv2.resize(im, im_size, interpolation=cv2.INTER_NEAREST)
+def data_transform(img, im_size):
+    # img = img.resize(im_size, Image.BILINEAR)
+    img = cv2.resize(img, im_size, interpolation = cv2.INTER_NEAREST)
     img = F.to_tensor(img)  # convert to tensor (values between 0 and 1)
     img = F.normalize(img, MEAN, STD)  # normalize the tensor
     return img
@@ -67,11 +67,12 @@ def setupSegNet(args):
 
     args.num_classes = len(CITYSCAPE_CLASS_LIST)
     modelWeightsFile = getPreTrainedModel(args)
-    
+    print(modelWeightsFile)
     if args.model == 'espnetv2':
         model = espNetModel(args, modelWeightsFile)
     elif args.model == 'dicenet':
         model = diceNet(args, modelWeightsFile)
+    model.eval()
     return model
 
 
@@ -81,33 +82,12 @@ def espNetModel(args, weights,dataset="city"):
     model = ESPNetv2Segmentation(args, classes=args.num_classes, dataset=dataset)
     num_gpus = torch.cuda.device_count()
     device = 'cuda' if num_gpus >= 1 else 'cpu'
-    pretrained_dict = torch.load(weights)
-
-    basenet_dict = model.base_net.state_dict()
-    model_dict = model.state_dict()
-    overlap_dict = {k: v for k, v in pretrained_dict.items() if k in basenet_dict}
-
-    basenet_dict.update(overlap_dict)
-    model.base_net.load_state_dict(basenet_dict)
+    weights_dict = torch.load(weights)
+    model.load_state_dict(weights_dict)
     model.to(device)
-    rospy.loginfo("Loaded PreTrained weights")
-
     return model
+
 
 def diceNet(args, weights):
     # Function to intialize the dicent segmenetation network
-
-    model = DiCENetSegmentation(args, classes=args.num_classes)
-    num_gpus = torch.cuda.device_count()
-    device = 'cuda' if num_gpus >= 1 else 'cpu'
-    pretrained_dict = torch.load(weights, map_location=torch.device(device))
-
-    basenet_dict = model.base_net.state_dict()
-    model_dict = model.state_dict()
-    overlap_dict = {k: v for k, v in pretrained_dict.items() if k in basenet_dict}
-
-    basenet_dict.update(overlap_dict)
-    model.base_net.load_state_dict(basenet_dict)
-    rospy.loginfo("Loaded PreTrained weights")
-
-    return model
+    raise NotImplementedError

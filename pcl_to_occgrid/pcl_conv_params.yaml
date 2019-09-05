@@ -1,3 +1,0 @@
-segmented_topic: "/zed/zed_node/segmented_image"
-PCL_topic: "/zed/zed_node/point_cloud/cloud_registered"
-layers_File: "layers.json"

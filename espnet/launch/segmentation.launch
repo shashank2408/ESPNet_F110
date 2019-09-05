@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- Load Params from the params yaml file --> 
+    <rosparam command="load" file="$(find espnet)/src/segnet_params.yaml" />
+    
+    <node pkg="espnet" type="espnet.py" name="espnet" output="screen"/>
+
+</launch>
+
